@@ -1,8 +1,6 @@
 package fr.parisdauphine.panel;
 
 import fr.parisdauphine.entity.Car;
-import fr.parisdauphine.entity.Cart;
-import fr.parisdauphine.entity.User;
 import fr.parisdauphine.service.CartService;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

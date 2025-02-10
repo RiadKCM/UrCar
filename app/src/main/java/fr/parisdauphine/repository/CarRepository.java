@@ -56,6 +56,20 @@ public class CarRepository {
         }
     }
 
+    public void updateCarStatusToSold(List<Car> cars) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+
+            for (Car car : cars) {
+                car.setStatus(Car.Status.VENDU); // ✅ Changer le statut en VENDU
+                session.merge(car);
+            }
+
+            transaction.commit();
+        }
+    }
+
+
     // Méthode pour récupérer une voiture par son ID
     public Car findCarById(Long id) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {

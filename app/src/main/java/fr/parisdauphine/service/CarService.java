@@ -41,6 +41,10 @@ public class CarService {
         return carRepository.findById(id);
     }
 
+    public void updateCarStatusToSold(List<Car> cars) {
+        carRepository.updateCarStatusToSold(cars);
+    }
+
     public List<Car> fetchCarsByCriteria(String criteria) {
         return carRepository.fetchCarsByCriteria(criteria);
     }

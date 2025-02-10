@@ -4,6 +4,7 @@ import fr.parisdauphine.entity.Car;
 import fr.parisdauphine.entity.Cart;
 import fr.parisdauphine.entity.Order;
 import fr.parisdauphine.entity.User;
+import fr.parisdauphine.repository.CarRepository;
 import fr.parisdauphine.repository.CartRepository;
 import fr.parisdauphine.repository.OrderRepository;
 
@@ -14,10 +15,12 @@ public class CartService {
 
     private CartRepository cartRepository;
     private OrderRepository orderRepository;
+    private CarRepository carRepository;
 
     public CartService() {
         this.cartRepository = new CartRepository();
         this.orderRepository = new OrderRepository();
+        this.carRepository = new CarRepository();
     }
 
     public void removeFromCart(User user, Car car) {
@@ -45,6 +48,10 @@ public class CartService {
         // Enregistre la commande dans la base de données
         orderRepository.save(order);
 
+        carRepository.updateCarStatusToSold(cart.getCars());
+
+        cart.getCars().clear();
+        cartRepository.update(cart);
     }
 
     public List<Car> getCarsInCart(User user) {
