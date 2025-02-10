@@ -1,6 +1,7 @@
 package fr.parisdauphine.panel;
 
 import fr.parisdauphine.entity.Car;
+import fr.parisdauphine.entity.Invoice;
 import fr.parisdauphine.service.CartService;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -8,13 +9,18 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 import java.util.List;
 
 public class CartPanel extends VBox {
     private final ListView<String> cartListView = new ListView<>();
     private final MainFrame mainFrame;
-    private final Label totalLabel = new Label("Total: 0€");
+    private final Label totalLabel = new Label(" 0€");
     private final CartService cartService;
 
     public CartPanel(MainFrame mainFrame) {
@@ -48,7 +54,7 @@ public class CartPanel extends VBox {
         removeButton.setOnAction(e -> removeSelectedItem());
         leftColumn.getChildren().add(removeButton);
 
-        VBox rightColumn = new VBox(10, new HBox(10, new Label("Total : "), totalLabel));
+        VBox rightColumn = new VBox(10, createPaymentForm(), new HBox(10, new Label(""), totalLabel));
         rightColumn.setPadding(new Insets(10));
         rightColumn.setAlignment(Pos.CENTER);
 
@@ -75,7 +81,43 @@ public class CartPanel extends VBox {
         updateTotal();
     }
 
-
+    private void generateInvoicePDF(Invoice invoice) {
+        String fileName = "facture_" + invoice.getId() + ".pdf";
+        try {
+            // Création du document PDF avec pdfbox
+            PDDocument document = new PDDocument();
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+            contentStream.beginText();
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 18); // Utilise Helvetica sans gras
+            contentStream.newLineAtOffset(50, 750);
+            // Ajouter le titre "Facture"
+            contentStream.showText("Facture #" + invoice.getId());
+            contentStream.newLineAtOffset(0, -30);
+            // Ajouter la date de la facture
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12); // Utilise Helvetica sans gras
+            contentStream.showText("Date : " + invoice.getInvoiceDate());
+            contentStream.newLineAtOffset(0, -20);
+            // Ajouter le total
+            contentStream.showText("Total : " + invoice.getTotalAmount() + "€");
+            contentStream.newLineAtOffset(0, -20);
+            // Ajouter les détails de la commande
+            contentStream.showText("Commande #" + invoice.getOrder().getId());
+            contentStream.newLineAtOffset(0, -20);
+            // Terminer l'ajout de texte
+            contentStream.endText();
+            // Enregistrer le fichier PDF
+            contentStream.close();
+            document.save(fileName);
+            document.close();
+            showAlert(Alert.AlertType.INFORMATION, "Facture générée", "La facture a été sauvegardée sous : " + fileName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Erreur lors de la génération de la facture.");
+        }
+    }
+    
     private void removeSelectedItem() {
         String selectedItem = cartListView.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
@@ -89,7 +131,29 @@ public class CartPanel extends VBox {
         }
     }
 
+    private VBox createPaymentForm() {
+        VBox form = new VBox(10);
+        form.setAlignment(Pos.CENTER);
+        form.getChildren().add(new Label("Informations de paiement :"));
 
+        TextField nameField = new TextField();
+        nameField.setPromptText("Nom complet");
+        form.getChildren().add(new HBox(10, new Label("Nom complet:"), nameField));
+
+        TextField cardNumberField = new TextField();
+        cardNumberField.setPromptText("Numéro de carte");
+        form.getChildren().add(new HBox(10, new Label("Numéro de carte:"), cardNumberField));
+
+        PasswordField bicField = new PasswordField();
+        bicField.setPromptText("Code secret");
+        form.getChildren().add(new HBox(10, new Label("Code Secret:"), bicField));
+
+        TextField expiryDateField = new TextField();
+        expiryDateField.setPromptText("MM/YY");
+        form.getChildren().add(new HBox(10, new Label("Date d'expiration (MM/YY):"), expiryDateField));
+
+        return form;
+    }
 
     private void handlePurchase() {
         try {

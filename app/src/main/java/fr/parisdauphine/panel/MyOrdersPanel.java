@@ -79,6 +79,12 @@ public class MyOrdersPanel extends VBox {
         Label statusLabel = new Label("Statut: " + order.getStatus());
         statusLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #007bff; -fx-font-weight: bold;");
 
+        // Calcul du prix total de la commande
+        double totalPrice = order.getCars().stream().mapToDouble(Car::getPrice).sum();
+        Label totalPriceLabel = new Label("Prix total: " + totalPrice + "€");
+        totalPriceLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #333333;");
+
+        // Liste des voitures associées à la commande
         ListView<String> carListView = new ListView<>();
         for (Car car : order.getCars()) {
             carListView.getItems().add(car.getModel() + " - " + car.getPrice() + "€");
@@ -86,7 +92,7 @@ public class MyOrdersPanel extends VBox {
         carListView.setPrefHeight(80);
         carListView.setMaxWidth(300);
 
-        orderBox.getChildren().addAll(orderIdLabel, dateLabel, statusLabel, carListView);
+        orderBox.getChildren().addAll(orderIdLabel, dateLabel, statusLabel, totalPriceLabel, carListView);
         return orderBox;
     }
 
@@ -98,7 +104,6 @@ public class MyOrdersPanel extends VBox {
         alert.showAndWait();
     }
 }
-
 
 /*package fr.parisdauphine.panel;
 

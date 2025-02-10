@@ -274,6 +274,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -290,6 +292,9 @@ public class ResultatsPanel extends VBox {
     private List<Car> carList;
     private static final int ITEMS_PER_PAGE = 20;
     private int currentPage = 1;
+    private Button nextButton;
+    private Button previousButton;
+
 
     private final CarService carService = new CarService();
     private final CartService cartService = new CartService();
@@ -380,7 +385,7 @@ public class ResultatsPanel extends VBox {
         Button likeButton = new Button("❤️");
         likeButton.setStyle("-fx-background-color: transparent; -fx-font-size: 16px;");
         likeButton.setOnAction(e -> addToFavorites(car));
-
+        carImageView.setOnMouseClicked(e -> showImageDetail(car));
         HBox buttonBox = new HBox(10, likeButton, addToCartButton);
         carInfo.getChildren().addAll(brandLabel, priceLabel, buttonBox);
         carCard.getChildren().addAll(carImageView, carInfo);
@@ -420,10 +425,10 @@ public class ResultatsPanel extends VBox {
     private HBox createPaginationControls() {
         HBox paginationControls = new HBox(10);
         paginationControls.setAlignment(Pos.CENTER);
-
+    
         int totalPages = (int) Math.ceil((double) carList.size() / ITEMS_PER_PAGE);
-
-        Button previousButton = new Button("⟨ Précédent");
+    
+        previousButton = new Button("⟨ Précédent");
         previousButton.setDisable(currentPage == 1);
         previousButton.setOnAction(e -> {
             if (currentPage > 1) {
@@ -433,7 +438,7 @@ public class ResultatsPanel extends VBox {
             }
         });
         paginationControls.getChildren().add(previousButton);
-
+    
         for (int i = 1; i <= totalPages; i++) {
             Button pageButton = new Button(String.valueOf(i));
             int pageNumber = i;
@@ -443,11 +448,11 @@ public class ResultatsPanel extends VBox {
                 updateResults((VBox) ((ScrollPane) getChildren().get(1)).getContent());
                 refreshPaginationControls();
             });
-
+    
             paginationControls.getChildren().add(pageButton);
         }
-
-        Button nextButton = new Button("Suivant ⟩");
+    
+        nextButton = new Button("Suivant ⟩");
         nextButton.setDisable(currentPage == totalPages);
         nextButton.setOnAction(e -> {
             if (currentPage < totalPages) {
@@ -456,13 +461,112 @@ public class ResultatsPanel extends VBox {
                 refreshPaginationControls();
             }
         });
+    
         paginationControls.getChildren().add(nextButton);
-
+    
         return paginationControls;
+    }
+    
+    private void showImageDetail(Car car) {
+        List<String> imagePaths = car.getImages().stream()
+                .map(img -> "src/main/resources" + img.getImagePath())
+                .toList();
+    
+        if (imagePaths.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Aucune image", "Aucune image disponible pour cette voiture.");
+            return;
+        }
+    
+        Dialog<Void> imageDialog = new Dialog<>();
+        imageDialog.setTitle("Détails des images");
+        imageDialog.setHeaderText(car.getBrand() + " " + car.getModel());
+    
+        VBox dialogContent = new VBox(10);
+        dialogContent.setAlignment(Pos.CENTER);
+        dialogContent.setPadding(new Insets(10));
+    
+        ImageView imageView = new ImageView();
+        imageView.setFitWidth(500);
+        imageView.setFitHeight(300);
+        imageView.setPreserveRatio(true);
+    
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setContent(imageView);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
+        scrollPane.setPannable(true); // Permet de scroller avec la souris
+    
+        final int[] currentIndex = {0};
+        updateImageView(imageView, imagePaths.get(currentIndex[0]));
+    
+        Button prevButton = new Button("⬅ Précédent");
+        prevButton.setDisable(currentIndex[0] == 0);
+        prevButton.setOnAction(e -> {
+            if (currentIndex[0] > 0) {
+                currentIndex[0]--;
+                updateImageView(imageView, imagePaths.get(currentIndex[0]));
+                nextButton.setDisable(false);
+            }
+            if (currentIndex[0] == 0) {
+                prevButton.setDisable(true);
+            }
+        });
+    
+        Button nextButton = new Button("Suivant ➡");
+        nextButton.setDisable(currentIndex[0] == imagePaths.size() - 1);
+        nextButton.setOnAction(e -> {
+            if (currentIndex[0] < imagePaths.size() - 1) {
+                currentIndex[0]++;
+                updateImageView(imageView, imagePaths.get(currentIndex[0]));
+                prevButton.setDisable(false);
+            }
+            if (currentIndex[0] == imagePaths.size() - 1) {
+                nextButton.setDisable(true);
+            }
+        });
+    
+        HBox buttonBox = new HBox(10, prevButton, nextButton);
+        buttonBox.setAlignment(Pos.CENTER);
+    
+        dialogContent.getChildren().addAll(scrollPane, buttonBox);
+        imageDialog.getDialogPane().setContent(dialogContent);
+        imageDialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+        imageDialog.showAndWait();
+    }    
+    
+    private void updateImageView(ImageView imageView, String imagePath) {
+        File imageFile = new File(imagePath);
+        if (imageFile.exists()) {
+            imageView.setImage(new Image(imageFile.toURI().toString()));
+        }
+    }
+
+    private void updateImageSize(ImageView imageView, Dialog<Void> imageDialog) {
+        // Redimensionner l'image pour qu'elle s'adapte à la taille de la fenêtre du dialogue
+        imageDialog.widthProperty().addListener((obs, oldVal, newVal) -> {
+            double width = newVal.doubleValue() - 40;  // 40px pour les marges
+            double height = width * 0.75;  // Calculer la hauteur en fonction du ratio d'image
+            imageView.setFitWidth(width);
+            imageView.setFitHeight(height);
+        });
+    
+        imageDialog.heightProperty().addListener((obs, oldVal, newVal) -> {
+            double height = newVal.doubleValue() - 100;  // Ajustement avec une marge pour les boutons
+            double width = height * 1.33;  // Calculer la largeur en fonction du ratio d'image
+            imageView.setFitWidth(width);
+            imageView.setFitHeight(height);
+        });
+    }
+    
+    private void updateButtonState(Button prevButton, Button nextButton, int currentIndex, int totalImages) {
+        prevButton.setDisable(currentIndex == 0);
+        nextButton.setDisable(currentIndex == totalImages - 1);
     }
 
     private void refreshPaginationControls() {
-        getChildren().removeIf(node -> node instanceof HBox && ((HBox) node).getChildren().stream().anyMatch(n -> n instanceof Button));
-        getChildren().add(getChildren().size() - 1, createPaginationControls());
+        int totalPages = (int) Math.ceil((double) carList.size() / ITEMS_PER_PAGE);
+    
+        previousButton.setDisable(currentPage == 1);
+        nextButton.setDisable(currentPage == totalPages);
     }
 }

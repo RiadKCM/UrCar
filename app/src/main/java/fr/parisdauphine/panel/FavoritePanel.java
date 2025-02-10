@@ -377,6 +377,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -481,26 +483,97 @@ public class FavoritePanel extends VBox {
     }
 
     private void showImageDetail(Car car) {
-        Alert imageAlert = new Alert(Alert.AlertType.INFORMATION);
-        imageAlert.setTitle("Détails de l'image");
-        imageAlert.setHeaderText(car.getBrand() + " " + car.getModel());
-
-        ImageView imageView = new ImageView();
-        if (!car.getImages().isEmpty()) {
-            String imagePath = "src/main/resources" + car.getImages().get(0).getImagePath();
-            File imageFile = new File(imagePath);
-            if (imageFile.exists()) {
-                imageView.setImage(new Image(imageFile.toURI().toString()));
-            }
-        }
-        imageView.setFitWidth(400);
-        imageView.setPreserveRatio(true);
-
-        VBox dialogContent = new VBox(imageView);
+        Dialog<Void> imageDialog = new Dialog<>();
+        imageDialog.setTitle("Détails de l'image");
+        imageDialog.setHeaderText(car.getBrand() + " " + car.getModel());
+    
+        VBox dialogContent = new VBox();
         dialogContent.setAlignment(Pos.CENTER);
         dialogContent.setPadding(new Insets(10));
-        imageAlert.getDialogPane().setContent(dialogContent);
-        imageAlert.showAndWait();
+    
+        // Créer l'ImageView et l'encapsuler dans un ScrollPane pour activer le défilement
+        ImageView imageView = new ImageView();
+        imageView.setPreserveRatio(true);
+    
+        List<String> imagePaths = car.getImages().stream()
+                .map(img -> "src/main/resources" + img.getImagePath())
+                .toList();
+    
+        if (imagePaths.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Aucune image", "Aucune image disponible pour cette voiture.");
+            return;
+        }
+    
+        final int[] currentIndex = {0};
+        updateImageView(imageView, imagePaths.get(currentIndex[0]));
+    
+        // Créer un ScrollPane autour de l'ImageView pour permettre le défilement
+        ScrollPane imageScrollPane = new ScrollPane();
+        imageScrollPane.setContent(imageView);
+        imageScrollPane.setFitToHeight(true);  // Ajuste la hauteur à la taille du ScrollPane
+        imageScrollPane.setFitToWidth(true);   // Ajuste la largeur à la taille du ScrollPane
+        imageScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED); // Barres de défilement verticales apparaissent quand nécessaire
+    
+        // Mettre une taille initiale de l'image en fonction de la taille du dialogue
+        updateImageSize(imageView, imageDialog);
+    
+        Button prevButton = new Button("⬅ Précédent");
+        Button nextButton = new Button("Suivant ➡");
+    
+        prevButton.setOnAction(e -> {
+            if (currentIndex[0] > 0) {
+                currentIndex[0]--;
+                updateImageView(imageView, imagePaths.get(currentIndex[0]));
+            }
+            updateButtonState(prevButton, nextButton, currentIndex[0], imagePaths.size());
+        });
+    
+        nextButton.setOnAction(e -> {
+            if (currentIndex[0] < imagePaths.size() - 1) {
+                currentIndex[0]++;
+                updateImageView(imageView, imagePaths.get(currentIndex[0]));
+            }
+            updateButtonState(prevButton, nextButton, currentIndex[0], imagePaths.size());
+        });
+    
+        updateButtonState(prevButton, nextButton, currentIndex[0], imagePaths.size());
+    
+        HBox buttonContainer = new HBox(10, prevButton, nextButton);
+        buttonContainer.setAlignment(Pos.CENTER);
+    
+        dialogContent.getChildren().addAll(imageScrollPane, buttonContainer);
+        imageDialog.getDialogPane().setContent(dialogContent);
+        imageDialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+        imageDialog.showAndWait();
+    }
+    
+    private void updateImageView(ImageView imageView, String imagePath) {
+        File imageFile = new File(imagePath);
+        if (imageFile.exists()) {
+            imageView.setImage(new Image(imageFile.toURI().toString()));
+        }
+    }
+    
+    private void updateImageSize(ImageView imageView, Dialog<Void> imageDialog) {
+        // Redimensionner l'image pour qu'elle s'adapte à la taille de la fenêtre du dialogue
+        imageDialog.widthProperty().addListener((obs, oldVal, newVal) -> {
+            double width = newVal.doubleValue() - 40;  // 40px pour les marges
+            double height = width * 0.75;  // Calculer la hauteur en fonction du ratio d'image
+            imageView.setFitWidth(width);
+            imageView.setFitHeight(height);
+        });
+    
+        imageDialog.heightProperty().addListener((obs, oldVal, newVal) -> {
+            double height = newVal.doubleValue() - 100;  // Ajustement avec une marge pour les boutons
+            double width = height * 1.33;  // Calculer la largeur en fonction du ratio d'image
+            imageView.setFitWidth(width);
+            imageView.setFitHeight(height);
+        });
+    }
+    
+    private void updateButtonState(Button prevButton, Button nextButton, int currentIndex, int totalImages) {
+        prevButton.setDisable(currentIndex == 0);
+        nextButton.setDisable(currentIndex == totalImages - 1);
     }
 
     private void showAlert(Alert.AlertType alertType, String title, String content) {
