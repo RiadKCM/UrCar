@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="fr.parisdauphine.AppTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-02-10T13:22:23" hostname="LOUNES" time="0.011">
+  <properties/>
+  <testcase name="testApp" classname="fr.parisdauphine.AppTest" time="0.011"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

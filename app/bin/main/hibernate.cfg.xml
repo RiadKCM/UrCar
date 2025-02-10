@@ -1,0 +1,35 @@
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <!-- Configuration de la connexion à la base de données -->
+        <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/urcar?createDatabaseIfNotExist=true</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.connection.password">root</property>
+
+        <!-- Pool de connexions (optionnel si pas de HikariCP) -->
+        <property name="hibernate.hikari.maximumPoolSize">10</property>
+
+        <!-- Dialecte pour MySQL -->
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+
+        <!-- Stratégie pour la gestion des tables -->
+        <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <!-- Afficher les requêtes SQL dans la console -->
+        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.format_sql">true</property>
+
+        <property name="hibernate.bytecode.use_reflection_optimizer">false</property>
+
+        <!-- Mapping des entités -->
+        <mapping class="fr.parisdauphine.entity.User"/>
+        <mapping class="fr.parisdauphine.entity.Car"/>
+        <mapping class="fr.parisdauphine.entity.Stock"/>
+        <mapping class="fr.parisdauphine.entity.Cart"/>
+        <mapping class="fr.parisdauphine.entity.Favorite"/>
+        <mapping class="fr.parisdauphine.entity.Review"/>
+    </session-factory>
+</hibernate-configuration>
