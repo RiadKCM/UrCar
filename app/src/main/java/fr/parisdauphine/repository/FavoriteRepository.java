@@ -6,6 +6,8 @@ import fr.parisdauphine.entity.User;
 import fr.parisdauphine.config.HibernateUtil;
 import org.hibernate.Session;
 
+import java.util.List;
+
 public class FavoriteRepository {
 
     public void addCarToFavorites(User user, Car car) {
@@ -45,6 +47,14 @@ public class FavoriteRepository {
             session.beginTransaction();
             session.save(favorite);
             session.getTransaction().commit();
+        }
+    }
+
+    public List<Favorite> getFavorites(User user) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            return session.createQuery("FROM Favorite f WHERE f.user = :user", Favorite.class)
+                    .setParameter("user", user)
+                    .list();
         }
     }
 }

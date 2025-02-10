@@ -2,7 +2,6 @@ package fr.parisdauphine;
 
 import fr.parisdauphine.config.HibernateUtil;
 import fr.parisdauphine.panel.MainFrame;
-import fr.parisdauphine.repository.CartRepository;
 import fr.parisdauphine.repository.UserRepository;
 import fr.parisdauphine.service.*;
 import javafx.application.Application;
@@ -15,7 +14,7 @@ public class App extends Application {
     public void start(Stage primaryStage) {
         CarService carService = new CarService();
         UserRepository userRepository = new UserRepository(); // Créer une instance de UserRepository
-        UserService userService = new UserService(userRepository); // Passer UserRepository à UserService
+        UserService userService = new UserService(userRepository);// Passer UserRepository à UserService
         MainFrame mainFrame = new MainFrame(userService,carService);
 
         // Ajouter un gestionnaire pour la fermeture de l'application

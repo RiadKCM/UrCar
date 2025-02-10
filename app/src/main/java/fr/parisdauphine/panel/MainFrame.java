@@ -174,7 +174,7 @@ public class MainFrame extends Stage {
         panels.put("Panier", new VBox());
         panels.put("Avis", new ReviewPanel(this));
         panels.put("Compte", new VBox());
-        panels.put("Mes Commandes", new MyOrdersPanel(this));
+        panels.put("Mes Commandes", new VBox());
         panels.put("Resultats", new VBox());
         panels.put("GestionVoitures", new VBox(new CarAdminPanel(this)));
 
@@ -272,6 +272,11 @@ public class MainFrame extends Stage {
             // ✅ Vérifie la connexion avant de charger les favoris
             panel.getChildren().clear();  // Vide l'ancien contenu
             panel.getChildren().add(new HomePanel(this,carService));  // ✅ Charge les paniers dynamiquement
+        }
+
+        if ("Commandes".equals(panelName)) {
+            panel.getChildren().clear();
+            panel.getChildren().add(new MyOrdersPanel(this));
         }
 
         if (panel != null) {
@@ -458,19 +463,5 @@ public class MainFrame extends Stage {
     public Map<String, VBox> getPanels() {
         return panels;
     }
-
-    /*public void testRole() {
-        if (currentUser != null) {
-            if (currentUser.getRole() == User.Role.ADMIN) {
-                System.out.println("L'utilisateur est un ADMIN.");
-            } else if (currentUser.getRole() == User.Role.USER) {
-                System.out.println("L'utilisateur est un USER.");
-            } else {
-                System.out.println("Rôle non reconnu.");
-            }
-        } else {
-            System.out.println("Aucun utilisateur connecté.");
-        }
-    }*/
 
 }

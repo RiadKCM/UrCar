@@ -1,11 +1,131 @@
 package fr.parisdauphine.panel;
 
+import fr.parisdauphine.entity.Car;
+import fr.parisdauphine.entity.Cart;
+import fr.parisdauphine.entity.User;
+import fr.parisdauphine.service.CartService;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+
+import java.util.List;
+
+public class CartPanel extends VBox {
+    private final ListView<String> cartListView = new ListView<>();
+    private final MainFrame mainFrame;
+    private final Label totalLabel = new Label("Total: 0€");
+    private final CartService cartService;
+
+    public CartPanel(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
+        this.cartService = new CartService();
+        initializeUI();
+    }
+
+    private void initializeUI() {
+        setSpacing(20);
+        setPadding(new Insets(10));
+        setAlignment(Pos.CENTER);
+
+        VBox cardContainer = new VBox(20);
+        cardContainer.setPadding(new Insets(20));
+        cardContainer.setStyle("-fx-border-color: lightgrey; -fx-border-width: 2px; -fx-border-radius: 10px; -fx-background-color: white;");
+        cardContainer.setAlignment(Pos.CENTER);
+
+        Text title = new Text("Votre Panier");
+        title.setFont(Font.font("Arial", 24));
+        cardContainer.getChildren().add(title);
+
+        cartListView.setPlaceholder(new Label("Votre panier est vide."));
+        cartListView.setStyle("-fx-font-size: 14px;");
+        VBox leftColumn = new VBox(10, new Label("Voitures dans le panier:"), cartListView);
+        leftColumn.setPadding(new Insets(10));
+        leftColumn.setAlignment(Pos.CENTER);
+
+        Button removeButton = new Button("❌ Supprimer l'article");
+        removeButton.setStyle("-fx-background-color: red; -fx-text-fill: white;");
+        removeButton.setOnAction(e -> removeSelectedItem());
+        leftColumn.getChildren().add(removeButton);
+
+        VBox rightColumn = new VBox(10, new HBox(10, new Label("Total : "), totalLabel));
+        rightColumn.setPadding(new Insets(10));
+        rightColumn.setAlignment(Pos.CENTER);
+
+        Button confirmButton = new Button("✔️ Confirmer l'achat");
+        confirmButton.setStyle("-fx-background-color: green; -fx-text-fill: white;");
+        confirmButton.setOnAction(e -> handlePurchase());
+        rightColumn.getChildren().add(confirmButton);
+
+        HBox mainContainer = new HBox(20, leftColumn, rightColumn);
+        mainContainer.setAlignment(Pos.CENTER);
+
+        cardContainer.getChildren().add(mainContainer);
+        getChildren().add(cardContainer);
+
+        loadCart();
+    }
+
+    private void loadCart() {
+        cartListView.getItems().clear();
+        List<Car> cars = cartService.getCarsInCart(mainFrame.getCurrentUser());
+        for (Car car : cars) {
+            cartListView.getItems().add(car.getBrand() + " " + car.getModel() + " - " + car.getPrice() + "€");
+        }
+        updateTotal();
+    }
+
+
+    private void removeSelectedItem() {
+        String selectedItem = cartListView.getSelectionModel().getSelectedItem();
+        if (selectedItem != null) {
+            String[] parts = selectedItem.split(" - ");
+            if (parts.length > 1) {
+                String carBrandModel = parts[0].trim();
+                cartService.removeCarFromCart(mainFrame.getCurrentUser(), carBrandModel);
+                loadCart();
+                showAlert(Alert.AlertType.INFORMATION, "Article supprimé", "L'article a été retiré du panier.");
+            }
+        }
+    }
+
+
+
+    private void handlePurchase() {
+        try {
+            cartService.placeOrder(mainFrame.getCurrentUser());
+            cartListView.getItems().clear();
+            updateTotal();
+            showAlert(Alert.AlertType.INFORMATION, "Achat confirmé", "Merci pour votre achat !");
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue lors de l'achat.");
+        }
+    }
+
+    private void updateTotal() {
+        double total = cartService.getCartTotal(mainFrame.getCurrentUser());
+        totalLabel.setText("Total: " + total + "€");
+    }
+
+    private void showAlert(Alert.AlertType alertType, String title, String content) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+}
+
+
+/*package fr.parisdauphine.panel;
+
 import fr.parisdauphine.config.HibernateUtil;
 import fr.parisdauphine.entity.Cart;
 import fr.parisdauphine.entity.Order;
 import fr.parisdauphine.entity.Car;
 import fr.parisdauphine.entity.User;
-import fr.parisdauphine.repository.CartRepository;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -19,7 +139,6 @@ import java.util.List;
 public class CartPanel extends VBox {
     private final ListView<String> cartListView = new ListView<>();
     private final MainFrame mainFrame;
-    private final CartRepository cartRepository = new CartRepository();
     private final Label totalLabel = new Label("Total: 0€");
 
     public CartPanel(MainFrame mainFrame) {
@@ -190,26 +309,6 @@ public class CartPanel extends VBox {
         }
     }
 
-    /*public void addToCart(Car car) {
-        cartListView.getItems().add(car.getBrand() + " " + car.getModel() + " - " + car.getPrice() + "€");
-        updateTotal();
-
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Transaction tx = session.beginTransaction();
-            User currentUser = mainFrame.getCurrentUser();
-            Cart cart = session.createQuery("FROM Cart c WHERE c.user = :user", Cart.class)
-                    .setParameter("user", currentUser)
-                    .uniqueResult();
-            if (cart == null) {
-                cart = new Cart();
-                cart.setUser(currentUser);
-            }
-            cart.getCars().add(car);
-            session.saveOrUpdate(cart);
-            tx.commit();
-        }
-    }*/
-
     private VBox createPaymentForm() {
         VBox form = new VBox(10);
         form.setAlignment(Pos.CENTER);
@@ -241,4 +340,4 @@ public class CartPanel extends VBox {
         alert.setContentText(content);
         alert.showAndWait();
     }
-}
+}*/

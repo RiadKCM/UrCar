@@ -8,6 +8,7 @@ import fr.parisdauphine.repository.CartRepository;
 import fr.parisdauphine.repository.OrderRepository;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CartService {
 
@@ -45,4 +46,32 @@ public class CartService {
         orderRepository.save(order);
 
     }
+
+    public List<Car> getCarsInCart(User user) {
+        // Appeler le repository pour obtenir la liste des voitures dans le panier
+        return cartRepository.findCarsInCart(user);
+    }
+
+
+    public void removeCarFromCart(User user, String carBrandModel) {
+        Cart cart = cartRepository.findCartByUser(user);
+        if (cart != null) {
+            Car carToRemove = cart.getCars().stream()
+                    .filter(car -> (car.getBrand() + " " + car.getModel()).equals(carBrandModel))
+                    .findFirst()
+                    .orElse(null);
+
+            if (carToRemove != null) {
+                cart.removeCar(carToRemove);
+                cartRepository.update(cart);
+            }
+        }
+    }
+
+    public double getCartTotal(User user) {
+        Cart cart = cartRepository.findCartByUser(user);
+        return (cart != null) ? cart.getCars().stream().mapToDouble(Car::getPrice).sum() : 0;
+    }
+
+
 }

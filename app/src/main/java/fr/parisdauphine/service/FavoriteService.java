@@ -5,6 +5,9 @@ import fr.parisdauphine.entity.Favorite;
 import fr.parisdauphine.entity.User;
 import fr.parisdauphine.repository.FavoriteRepository;
 
+import java.util.List;
+
+
 public class FavoriteService {
 
     private FavoriteRepository favoriteRepository;
@@ -21,6 +24,9 @@ public class FavoriteService {
         }
     }
 
+    public List<Favorite> getFavorites(User user) {
+        return favoriteRepository.getFavorites(user);
+    }
 
     public void removeFromFavorites(User user, Car car) {
         favoriteRepository.removeCarFromFavorites(user, car);
