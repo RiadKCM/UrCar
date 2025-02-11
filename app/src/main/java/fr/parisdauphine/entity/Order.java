@@ -75,6 +75,7 @@ public class Order {
 
     public Status getStatus() { return status; }
     public void setStatus(Status status) { this.status = status; }
+    
 
     // Méthodes pour gérer la liste des voitures
     public void addCar(Car car) {
