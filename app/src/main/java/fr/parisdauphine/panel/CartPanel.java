@@ -25,6 +25,7 @@ public class CartPanel extends VBox {
     private final ListView<String> cartListView = new ListView<>();
     private final MainFrame mainFrame;
     private final Label totalLabel = new Label(" 0€");
+    private final Label carsCountLabel = new Label("Nombre de voitures: 0");
     private final CartService cartService;
 
     public CartPanel(MainFrame mainFrame) {
@@ -49,7 +50,7 @@ public class CartPanel extends VBox {
 
         cartListView.setPlaceholder(new Label("Votre panier est vide."));
         cartListView.setStyle("-fx-font-size: 14px;");
-        VBox leftColumn = new VBox(10, new Label("Voitures dans le panier:"), cartListView);
+        VBox leftColumn = new VBox(10, new Label("Voitures dans le panier:"), carsCountLabel, cartListView);
         leftColumn.setPadding(new Insets(10));
         leftColumn.setAlignment(Pos.CENTER);
 
@@ -79,6 +80,11 @@ public class CartPanel extends VBox {
             cartListView.getItems().add(car.getBrand() + " " + car.getModel() + " - " + car.getPrice() + "€");
         }
         updateTotal();
+        updateCarsCount(cars.size());
+    }
+
+    private void updateCarsCount(int count) {
+        carsCountLabel.setText("Nombre de voitures: " + count);
     }
 
     private void generateInvoicePDF(Invoice invoice) {

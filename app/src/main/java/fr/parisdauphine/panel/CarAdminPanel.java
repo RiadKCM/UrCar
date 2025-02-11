@@ -33,30 +33,31 @@ public class CarAdminPanel extends VBox {
         setPadding(new Insets(20));
         setSpacing(10);
         setAlignment(Pos.TOP_CENTER);
-
+    
         Label titleLabel = new Label("🚗 Gestion des Voitures");
         titleLabel.setStyle("-fx-font-size: 20px; -fx-font-weight: bold;");
-
+    
         Button addCarButton = new Button("➕ Ajouter une Voiture");
         addCarButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
         addCarButton.setOnAction(e -> showAddCarForm());
-
+    
         searchField = new TextField();
         searchField.setPromptText("Rechercher par marque ou modèle...");
         searchField.textProperty().addListener((observable, oldValue, newValue) -> searchCars(newValue));
-
+    
         carListContainer = new VBox(10);
-
+    
         // ✅ Ajout du ScrollPane pour la liste des voitures
         ScrollPane scrollPane = new ScrollPane(carListContainer);
-        scrollPane.setFitToWidth(true); // Pour que le contenu prenne toute la largeur disponible
-        scrollPane.setPrefHeight(400);  // Hauteur maximale du conteneur avant de scroller
-
+        scrollPane.setFitToWidth(true);  // Pour que le contenu prenne toute la largeur disponible
+        scrollPane.setPrefHeight(400);   // Hauteur maximale du conteneur avant de scroller
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS); // Barre de défilement verticale toujours visible (ou automatique si nécessaire)
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);  // Désactive la barre de défilement horizontale (si pas nécessaire)
+    
         loadCars();
-
+    
         getChildren().addAll(titleLabel, addCarButton, searchField, scrollPane);
-    }
-
+    } 
 
     private void loadCars() {
         new Thread(() -> {
