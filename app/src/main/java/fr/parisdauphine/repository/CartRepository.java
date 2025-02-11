@@ -24,26 +24,25 @@ public class CartRepository {
     public void addCarToCart(User user, Car car) {
         try (Session session = sessionFactory.openSession()) {
             Transaction transaction = session.beginTransaction();
-
-            // Récupérer le panier de l'utilisateur
+    
             Cart cart = session.createQuery("FROM Cart c WHERE c.user = :user", Cart.class)
                     .setParameter("user", user)
                     .uniqueResult();
-
+    
             if (cart == null) {
-                // Si le panier n'existe pas, en créer un nouveau
                 cart = new Cart();
                 cart.setUser(user);
                 session.persist(cart);
             }
-
-            // Ajouter la voiture au panier
-            cart.addCar(car);
-
-            // Sauvegarder les modifications
-            session.merge(cart);
-
-            transaction.commit();  // Commencer la transaction
+    
+            if (!cart.getCars().contains(car)) {  // Vérifie si la voiture n'est pas déjà présente
+                cart.addCar(car);
+                session.merge(cart);
+            } else {
+                System.out.println("Cette voiture est déjà dans le panier !");
+            }
+    
+            transaction.commit();
         }
     }
 

@@ -19,13 +19,13 @@ public class Car {
 
     @Column(nullable = false)
     private Double price;
-
-    @Column(nullable = false)
+    
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description; 
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Status status; // ✅ Enumération pour le statut de la voiture
+    private Status status; // ✅ Nouveau champ pour le statut (EN_VENTE, VENDU)
 
     @OneToMany(mappedBy = "car", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>(); // ✅ Initialisation pour éviter NullPointerException
@@ -36,15 +36,16 @@ public class Car {
 
     // ✅ Constructeurs
     public Car() {
-        this.status = Status.EN_VENTE; 
+        this.status = Status.EN_VENTE; // Par défaut, une nouvelle voiture est en vente
     }
 
-    public Car(String brand, String model, Double price, List<Image> images) {
+    public Car(String brand, String model, Double price, String description, List<Image> images) {
         this.brand = brand;
         this.model = model;
         this.price = price;
+        this.description=description;
         this.images = images != null ? images : new ArrayList<>();
-        this.status = Status.EN_VENTE; 
+        this.status = Status.EN_VENTE; // Statut par défaut
     }
 
     // ✅ Getters et Setters
@@ -63,16 +64,17 @@ public class Car {
     public Status getStatus() { return status; }
     public void setStatus(Status status) { this.status = status; }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
 
     public List<Image> getImages() { return images; }
     public void setImages(List<Image> images) {
         this.images = images != null ? images : new ArrayList<>();
         if (this.images != null) {
-            this.images.forEach(image -> image.setCar(this)); 
+            this.images.forEach(image -> image.setCar(this)); // ✅ Assure la cohérence des relations
         }
     }
+
+    public String getdescription() { return description; }
+    public void setdescription(String description) { this.description = description; }
 
     // ✅ Méthodes pour gérer les images associées
     public void addImage(Image image) {

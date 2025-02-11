@@ -15,7 +15,9 @@ public class OrderRepository {
     public void save(Order order) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            session.persist(order);
+            System.out.println("deded");
+            session.save(order);
+            System.out.println("hhhhhhh");
             session.getTransaction().commit();
         }
     }

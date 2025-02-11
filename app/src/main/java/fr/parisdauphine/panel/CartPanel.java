@@ -158,6 +158,7 @@ public class CartPanel extends VBox {
     private void handlePurchase() {
         try {
             cartService.placeOrder(mainFrame.getCurrentUser());
+            loadCart();
             cartListView.getItems().clear();
             updateTotal();
             showAlert(Alert.AlertType.INFORMATION, "Achat confirmé", "Merci pour votre achat !");

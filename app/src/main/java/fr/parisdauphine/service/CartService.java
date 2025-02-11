@@ -47,7 +47,6 @@ public class CartService {
 
         // Enregistre la commande dans la base de données
         orderRepository.save(order);
-
         carRepository.updateCarStatusToSold(cart.getCars());
 
         cart.getCars().clear();

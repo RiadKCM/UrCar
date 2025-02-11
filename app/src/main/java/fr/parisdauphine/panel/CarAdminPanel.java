@@ -95,10 +95,10 @@ public class CarAdminPanel extends VBox {
         }
 
         // Info text with status
-        Label carInfo = new Label(car.getBrand() + " " + car.getModel() + " - " + car.getPrice() + " €");
+        Label carInfo = new Label(car.getBrand() + " " + car.getModel() + " - " + car.getPrice() + " €" + car.getdescription());
 
         // Display car status
-        String statusText = (car.getStatus() == Car.Status.EN_VENTE) ? "En production" : "Vendu";
+        String statusText = (car.getStatus() == Car.Status.EN_VENTE) ? "EN_VENTE" : "Vendu";
         Label carStatus = new Label(statusText);
         carStatus.setStyle("-fx-font-style: italic; -fx-text-fill: gray;");
 
@@ -115,86 +115,6 @@ public class CarAdminPanel extends VBox {
         return carCard;
     }
 
-
-
-    /*private void showEditForm(Car car) {
-        Stage formStage = new Stage();
-        VBox form = new VBox(10);
-        form.setPadding(new Insets(20));
-
-        TextField brandField = new TextField(car.getBrand());
-        TextField modelField = new TextField(car.getModel());
-        TextField priceField = new TextField(car.getPrice().toString());
-
-        // ✅ Affichage des images existantes
-        VBox imageContainer = new VBox(5);
-        for (Image image : car.getImages()) {
-            HBox imageBox = new HBox(10);
-            javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(new javafx.scene.image.Image("file:" + image.getImagePath()));
-            imageView.setFitWidth(100);
-            imageView.setFitHeight(80);
-            imageView.setPreserveRatio(true);
-
-            Button deleteImageButton = new Button("🗑️ Supprimer");
-            deleteImageButton.setOnAction(e -> {
-                car.removeImage(image);  // Supprimer l'image de la voiture
-                imageContainer.getChildren().remove(imageBox); // Supprimer du formulaire
-            });
-
-            imageBox.getChildren().addAll(imageView, deleteImageButton);
-            imageContainer.getChildren().add(imageBox);
-        }
-
-        // ✅ Ajouter de nouvelles images
-        List<File> newImages = new ArrayList<>();
-        Button addImageButton = new Button("📸 Ajouter des Images");
-        addImageButton.setOnAction(e -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Choisir des images");
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg"));
-            List<File> selectedFiles = fileChooser.showOpenMultipleDialog(formStage);
-            if (selectedFiles != null) {
-                newImages.addAll(selectedFiles);
-                for (File file : selectedFiles) {
-                    javafx.scene.image.ImageView newImageView = new javafx.scene.image.ImageView(new javafx.scene.image.Image(file.toURI().toString()));
-                    newImageView.setFitWidth(100);
-                    newImageView.setFitHeight(80);
-                    newImageView.setPreserveRatio(true);
-                    imageContainer.getChildren().add(newImageView);
-                }
-            }
-        });
-
-        Button saveButton = new Button("💾 Enregistrer");
-        saveButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
-        saveButton.setOnAction(e -> {
-            car.setBrand(brandField.getText());
-            car.setModel(modelField.getText());
-            car.setPrice(Double.parseDouble(priceField.getText()));
-
-            // ✅ Ajout des nouvelles images
-            for (File file : newImages) {
-                car.addImage(new Image(file.getAbsolutePath(), car));
-            }
-
-            updateCar(car, newImages);  // ✅ Correction : ajout de newImages ici
-            formStage.close();
-        });
-
-
-        form.getChildren().addAll(
-                new Label("Marque :"), brandField,
-                new Label("Modèle :"), modelField,
-                new Label("Prix (€) :"), priceField,
-                new Label("Images actuelles :"), imageContainer,
-                addImageButton,
-                saveButton
-        );
-
-        formStage.setScene(new Scene(form, 400, 500));
-        formStage.show();
-    }*/
-
     private void showEditForm(Car car) {
         Stage formStage = new Stage();
         VBox form = new VBox(10);
@@ -203,6 +123,7 @@ public class CarAdminPanel extends VBox {
         TextField brandField = new TextField(car.getBrand());
         TextField modelField = new TextField(car.getModel());
         TextField priceField = new TextField(car.getPrice().toString());
+        TextArea descriptionField = new TextArea(car.getdescription());
 
         // Image container to display existing images
         VBox imageContainer = new VBox(5);
@@ -250,6 +171,7 @@ public class CarAdminPanel extends VBox {
             car.setBrand(brandField.getText());
             car.setModel(modelField.getText());
             car.setPrice(Double.parseDouble(priceField.getText()));
+            car.setdescription(descriptionField.getText());
 
             // Add new images
             for (File file : newImages) {
@@ -264,6 +186,7 @@ public class CarAdminPanel extends VBox {
                 new Label("Marque :"), brandField,
                 new Label("Modèle :"), modelField,
                 new Label("Prix (€) :"), priceField,
+                new Label("Description :"), descriptionField,
                 new Label("Images actuelles :"), imageContainer,
                 addImageButton,
                 saveButton
@@ -323,8 +246,6 @@ public class CarAdminPanel extends VBox {
         }
     }
 
-
-
     private void showAddCarForm() {
         Stage formStage = new Stage();
         VBox form = new VBox(10);
@@ -338,6 +259,9 @@ public class CarAdminPanel extends VBox {
 
         TextField priceField = new TextField();
         priceField.setPromptText("Prix (€)");
+
+        TextArea descriptionField = new TextArea();
+        descriptionField.setPromptText("Entrez la description de la voiture...");
 
         List<File> selectedImages = new ArrayList<>();
         Button uploadImageButton = new Button("📸 Ajouter des Images");
@@ -360,6 +284,7 @@ public class CarAdminPanel extends VBox {
             newCar.setBrand(brandField.getText());
             newCar.setModel(modelField.getText());
             newCar.setPrice(Double.parseDouble(priceField.getText()));
+            newCar.setdescription(descriptionField.getText());
             newCar.setStatus(Car.Status.EN_VENTE);
 
             addCar(newCar, selectedImages); // ✅ On passe les images sélectionnées
@@ -368,7 +293,7 @@ public class CarAdminPanel extends VBox {
 
 
         form.getChildren().addAll(new Label("Marque:"), brandField, new Label("Modèle:"), modelField,
-                new Label("Prix (€):"), priceField, uploadImageButton, saveButton);
+                new Label("Prix (€):"), priceField,new Label("Description:"), descriptionField, uploadImageButton, saveButton);
 
         formStage.setScene(new Scene(form, 300, 350));
         formStage.show();
@@ -389,8 +314,6 @@ public class CarAdminPanel extends VBox {
             javafx.application.Platform.runLater(this::loadCars);
         }).start();
     }
-
-
 
     private void confirmDeleteCar(Car car) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
