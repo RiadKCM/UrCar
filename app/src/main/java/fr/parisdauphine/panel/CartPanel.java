@@ -5,6 +5,7 @@ import fr.parisdauphine.entity.Cart;
 import fr.parisdauphine.entity.Invoice;
 import fr.parisdauphine.entity.Order;
 import fr.parisdauphine.entity.User;
+import fr.parisdauphine.repository.InvoiceRepository;
 import fr.parisdauphine.service.CartService;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -60,18 +61,14 @@ public class CartPanel extends VBox {
         VBox rightColumn = new VBox(10, createPaymentForm(), new HBox(10, new Label(""), totalLabel));
         rightColumn.setPadding(new Insets(10));
         rightColumn.setAlignment(Pos.CENTER);
-
         Button confirmButton = new Button("✔️ Confirmer l'achat");
         confirmButton.setStyle("-fx-background-color: green; -fx-text-fill: white;");
         confirmButton.setOnAction(e -> handlePurchase());
         rightColumn.getChildren().add(confirmButton);
-
         HBox mainContainer = new HBox(20, leftColumn, rightColumn);
         mainContainer.setAlignment(Pos.CENTER);
-
         cardContainer.getChildren().add(mainContainer);
         getChildren().add(cardContainer);
-
         loadCart();
     }
 
@@ -95,7 +92,6 @@ public class CartPanel extends VBox {
                 contentStream.newLineAtOffset(50, 750);
                 contentStream.showText("Facture #" + (invoice.getId() != null ? invoice.getId() : "N/A"));
                 contentStream.newLineAtOffset(0, -30);
-    
                 contentStream.setFont(PDType1Font.HELVETICA, 12);
                 contentStream.showText("Date : " + invoice.getInvoiceDate());
                 contentStream.newLineAtOffset(0, -20);
@@ -123,7 +119,6 @@ public class CartPanel extends VBox {
                     contentStream.showText("Aucune voiture enregistrée.");
                     contentStream.newLineAtOffset(0, -15);
                 }
-    
                 contentStream.endText();
             }
             document.save(fileName);
@@ -180,8 +175,16 @@ public class CartPanel extends VBox {
             cartListView.getItems().clear();
             updateTotal();
             
+            double Amount = order.getCars().stream().mapToDouble(Car::getPrice).sum();
+
             // Générer la facture immédiatement après la validation de l'achat
-            Invoice invoice = new Invoice(order, cartService.getCartTotal(mainFrame.getCurrentUser()));
+            // 1. Créer l'instance de Invoice
+            Invoice invoice = new Invoice(order, Amount);
+
+            // 2. Enregistrer dans la base de données (l'ID sera auto-généré)
+            InvoiceRepository invoiceRepository = new InvoiceRepository();
+            invoiceRepository.save(invoice); 
+            // 3. Générer la facture PDF avec l'ID mis à jour
             generateInvoicePDF(invoice);
     
             showAlert(Alert.AlertType.INFORMATION, "Achat confirmé", "Merci pour votre achat ! La facture a été générée.");

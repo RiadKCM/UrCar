@@ -12,6 +12,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        DataInitializer.initializeData();
         CarService carService = new CarService();
         UserRepository userRepository = new UserRepository(); // Créer une instance de UserRepository
         UserService userService = new UserService(userRepository);// Passer UserRepository à UserService

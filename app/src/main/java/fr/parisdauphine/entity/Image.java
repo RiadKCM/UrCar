@@ -13,7 +13,7 @@ public class Image {
     private String imagePath;
 
     @ManyToOne
-    @JoinColumn(name = "car_id")  // Clé étrangère pointant vers la voiture
+    @JoinColumn(name = "car_id") // Clé étrangère
     private Car car;
 
     public Image() {}

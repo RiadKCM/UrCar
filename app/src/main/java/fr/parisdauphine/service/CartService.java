@@ -63,7 +63,6 @@ public class CartService {
         return order;  // ✅ Retourne l'objet `Order` complet
     }
     
-
     public List<Car> getCarsInCart(User user) {
         // Appeler le repository pour obtenir la liste des voitures dans le panier
         return cartRepository.findCarsInCart(user);
