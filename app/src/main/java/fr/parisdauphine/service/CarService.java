@@ -29,26 +29,6 @@ public class CarService {
         this.carRepository = new CarRepository();
     }
 
-    public List<Car> fetchAllCars() {
-        return carRepository.findAll();
-    }
-
-    public List<Car> fetchCarsByPage(int page, int itemsPerPage) {
-        return carRepository.findCarsByPage(page, itemsPerPage);
-    }
-
-    public Car fetchCarById(Long id) {
-        return carRepository.findById(id);
-    }
-
-    public void updateCarStatusToSold(List<Car> cars) {
-        carRepository.updateCarStatusToSold(cars);
-    }
-
-    public List<Car> fetchCarsByCriteria(String criteria) {
-        return carRepository.fetchCarsByCriteria(criteria);
-    }
-
     // Méthode pour obtenir toutes les voitures en vente
     public List<Car> getAvailableCars() {
         return carRepository.findAllCarsInSale();  // Appelle la méthode du repository pour récupérer les voitures en vente
