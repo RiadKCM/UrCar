@@ -87,7 +87,7 @@ public class MyOrdersPanel extends VBox {
         // Liste des voitures associées à la commande
         ListView<String> carListView = new ListView<>();
         for (Car car : order.getCars()) {
-            carListView.getItems().add(car.getBrand() + car.getModel() + " - " + car.getPrice() + "€" );
+            carListView.getItems().add(car.getBrand() + car.getModel() + " \n- Détails : " + car.getdescription());
         }
         carListView.setPrefHeight(80);
         carListView.setMaxWidth(300);

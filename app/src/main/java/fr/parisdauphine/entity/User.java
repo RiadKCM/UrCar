@@ -122,4 +122,14 @@ public class User {
     public void setAvis(List<Review> avis) {
         this.reviews = avis;
     }
+
+    public String getUsername() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getUsername'");
+    }
+
+    public void setUsername(String text) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setUsername'");
+    }
 }

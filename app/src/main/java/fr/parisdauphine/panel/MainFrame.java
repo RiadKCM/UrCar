@@ -177,6 +177,8 @@ public class MainFrame extends Stage {
         panels.put("Mes Commandes", new VBox());
         panels.put("Resultats", new VBox());
         panels.put("GestionVoitures", new VBox(new CarAdminPanel(this)));
+        panels.put("Gestion des utilisateurs", new VBox(new UserAdminPanel(this)));
+        panels.put("Gérer les Avis", new VBox(new ReviewAdminPanel(this)));
 
         return contentPanel;
     }
@@ -462,6 +464,12 @@ public class MainFrame extends Stage {
 
     public Map<String, VBox> getPanels() {
         return panels;
+    }
+
+
+    public Object getReviewPanel() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getReviewPanel'");
     }
 
 }

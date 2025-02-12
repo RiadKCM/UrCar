@@ -21,7 +21,7 @@ public class AdminPanel extends VBox {
 
         Button manageUsersButton = new Button("Gérer les Utilisateurs");
         manageUsersButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
-        manageUsersButton.setOnAction(e -> showAlert("Gestion des utilisateurs"));
+        manageUsersButton.setOnAction(e -> mainFrame.navigateTo("Gestion des utilisateurs"));
 
         Button viewSalesButton = new Button("Consulter les Ventes");
         viewSalesButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white;");

@@ -62,14 +62,16 @@ public class CartPanel extends VBox {
         VBox rightColumn = new VBox(10, createPaymentForm(), new HBox(10, new Label(""), totalLabel));
         rightColumn.setPadding(new Insets(10));
         rightColumn.setAlignment(Pos.CENTER);
-        Button confirmButton = new Button("✔️ Confirmer l'achat");
+        Button confirmButton = new Button("\u2714 Confirmer l'achat");
         confirmButton.setStyle("-fx-background-color: green; -fx-text-fill: white;");
         confirmButton.setOnAction(e -> handlePurchase());
+
         rightColumn.getChildren().add(confirmButton);
         HBox mainContainer = new HBox(20, leftColumn, rightColumn);
         mainContainer.setAlignment(Pos.CENTER);
         cardContainer.getChildren().add(mainContainer);
         getChildren().add(cardContainer);
+        
         loadCart();
     }
 

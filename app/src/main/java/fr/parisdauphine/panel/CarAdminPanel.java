@@ -103,7 +103,7 @@ public class CarAdminPanel extends VBox {
         Label carStatus = new Label(statusText);
         carStatus.setStyle("-fx-font-style: italic; -fx-text-fill: gray;");
 
-        Button editButton = new Button("✏️ Modifier");
+        Button editButton = new Button("\u270F Modifier");
         editButton.setOnAction(e -> showEditForm(car));
 
         Button deleteButton = new Button("🗑️ Supprimer");
@@ -135,7 +135,7 @@ public class CarAdminPanel extends VBox {
             imageView.setFitHeight(80);
             imageView.setPreserveRatio(true);
 
-            Button deleteImageButton = new Button("🗑️ Supprimer");
+            Button deleteImageButton = new Button("\u1F5D1 Supprimer");
             deleteImageButton.setOnAction(e -> {
                 car.removeImage(image);  // Remove the image from the car
                 imageContainer.getChildren().remove(imageBox); // Remove from UI

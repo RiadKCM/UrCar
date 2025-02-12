@@ -118,9 +118,10 @@ public class ResultatsPanel extends VBox {
         addToCartButton.setStyle("-fx-background-color: green; -fx-text-fill: white;");
         addToCartButton.setOnAction(e -> addToCart(car));
     
-        Button likeButton = new Button("❤️ ");
-        likeButton.setStyle("-fx-background-color: transparent; -fx-font-size: 16px;");
+        Button likeButton = new Button("\u2764 Ajouter aux favoris" );
+        likeButton.setStyle("-fx-background-color: red; -fx-text-fill: white");
         likeButton.setOnAction(e -> addToFavorites(car));
+        
         carImageView.setOnMouseClicked(e -> showImageDetail(car));
         HBox buttonBox = new HBox(10, likeButton, addToCartButton);
         carInfo.getChildren().addAll(brandLabel, priceLabel, descriptionLabel, buttonBox);
