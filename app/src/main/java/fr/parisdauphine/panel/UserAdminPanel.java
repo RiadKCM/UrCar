@@ -41,6 +41,10 @@ public class UserAdminPanel extends VBox {
         manageReviewsButton.setStyle("-fx-background-color: #FF5722; -fx-text-fill: white;");
         manageReviewsButton.setOnAction(e ->  mainFrame.navigateTo("Gérer les Avis"));
 
+        Button manageInvoiceButton = new Button("Gérer les Factures");
+        manageInvoiceButton.setStyle("-fx-background-color: #FF5722; -fx-text-fill: white;");
+        manageInvoiceButton.setOnAction(e ->  mainFrame.navigateTo("Gérer les Factures"));
+
         userListContainer = new VBox(10);
         reviewListContainer = new VBox(10);
 
@@ -53,6 +57,7 @@ public class UserAdminPanel extends VBox {
                 titleLabel, 
                 addUserButton, 
                 manageReviewsButton,
+                manageInvoiceButton,
                 userScrollPane
         );
     }

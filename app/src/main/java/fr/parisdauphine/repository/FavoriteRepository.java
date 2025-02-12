@@ -52,8 +52,9 @@ public class FavoriteRepository {
 
     public List<Favorite> getFavorites(User user) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("FROM Favorite f WHERE f.user = :user", Favorite.class)
+            return session.createQuery("FROM Favorite f WHERE f.user = :user AND f.car.status = :status", Favorite.class)
                     .setParameter("user", user)
+                    .setParameter("status", Car.Status.EN_VENTE) // Ajuste selon ton entité
                     .list();
         }
     }

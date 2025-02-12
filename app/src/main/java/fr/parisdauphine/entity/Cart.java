@@ -20,7 +20,7 @@ public class Cart {
             joinColumns = @JoinColumn(name = "cart_id"),
             inverseJoinColumns = @JoinColumn(name = "car_id")
     )
-    private List<Car> cars; // ✅ Remplacement de "stocks" par "cars"
+    private List<Car> cars;
 
     // Getters et Setters
     public Long getId() {
@@ -50,7 +50,9 @@ public class Cart {
     // ✅ Méthode pour ajouter une voiture au panier
     public void addCar(Car car) {
         if (car.getStatus() == Car.Status.EN_VENTE) { // Vérifie si la voiture est disponible à la vente
-            this.cars.add(car);
+            if (!cars.contains(car)) {
+                this.cars.add(car);
+            }
         } else {
             throw new IllegalStateException("Cette voiture n'est plus en vente.");
         }

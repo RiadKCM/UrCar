@@ -80,7 +80,7 @@ public class MainFrame extends Stage {
 
         // Par défaut, afficher l'écran de choix
         navigateTo("Choix");
-        
+
         // Création de la scène
         Scene scene = new Scene(rootLayout, 900, 600);
 
@@ -90,13 +90,12 @@ public class MainFrame extends Stage {
         setScene(scene);
         show();
     }
-    
+
     public void updateMyOrdersPanel(Order updatedOrder) {
         if (myOrdersPanel != null) {
-            myOrdersPanel.updateOrderStatus(updatedOrder);  
+            myOrdersPanel.updateOrderStatus(updatedOrder);
         }
     }
-    
 
     public User getCurrentUser() {
         return currentUser;
@@ -185,15 +184,16 @@ public class MainFrame extends Stage {
         panels.put("Compte", new VBox());
         panels.put("Mes Commandes", new VBox());
         panels.put("Resultats", new VBox());
-        panels.put("Gestion Voitures", new VBox(new CarAdminPanel(this)));
+        panels.put("GestionVoitures", new VBox(new CarAdminPanel(this)));
         panels.put("Gestion des utilisateurs", new VBox(new UserAdminPanel(this)));
         panels.put("Gérer les Avis", new VBox(new ReviewAdminPanel(this)));
+        panels.put("Gérer les Factures", new VBox());
         panels.put("Consulter les commandes", new VBox(new OrderAdminPanel(this)));
         panels.put("Tableau de Bord", new VBox(new DashboardPanel(this)));
 
-
         return contentPanel;
     }
+
 
     private VBox createFooter() {
         VBox footer = new VBox(5); // Espacement réduit entre les éléments
@@ -261,6 +261,11 @@ public class MainFrame extends Stage {
             // ✅ Vérifie la connexion avant de charger les favoris
             panel.getChildren().clear();  // Vide l'ancien contenu
             panel.getChildren().add(new FavoritePanel(this));  // ✅ Charge les favoris dynamiquement
+        }
+
+        if ("Gérer les Factures".equals(panelName)) {
+            panel.getChildren().clear();
+            panel.getChildren().add(new InvoiceAdminPanel(this));
         }
 
         if ("Panier".equals(panelName)) {

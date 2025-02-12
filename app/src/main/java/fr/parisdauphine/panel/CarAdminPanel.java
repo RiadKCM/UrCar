@@ -216,7 +216,7 @@ public class CarAdminPanel extends VBox {
     private void saveCarImages(Car car, List<File> images) {
         if (images.isEmpty()) return;
 
-        String imagesDir = "src/main/resources/image/voitures/";
+        String imagesDir = "src/main/resources/voitures/";
         new File(imagesDir).mkdirs(); // ✅ Crée le dossier s'il n'existe pas
 
         int imageIndex = 0; // Pour la numérotation des images
@@ -234,12 +234,12 @@ public class CarAdminPanel extends VBox {
                 // ✅ Enregistrer l'image dans la base de données
                 try (Session session = HibernateUtil.getSessionFactory().openSession()) {
                     session.beginTransaction();
-                    Image image = new Image("/image/voitures/" + newFileName, car); // ✅ Chemin relatif pour l'affichage
+                    Image image = new Image("/voitures/" + newFileName, car); // ✅ Chemin relatif pour l'affichage
                     session.save(image);
                     session.getTransaction().commit();
                 }
 
-                car.addImage(new Image("/image/voitures/" + newFileName, car)); // ✅ Ajouter l'image à la voiture
+                car.addImage(new Image("/voitures/" + newFileName, car)); // ✅ Ajouter l'image à la voiture
                 imageIndex++; // Incrémenter l'index pour la prochaine image
             } catch (Exception e) {
                 e.printStackTrace();

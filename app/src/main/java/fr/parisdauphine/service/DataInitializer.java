@@ -89,7 +89,7 @@ public class DataInitializer {
         int nombreImages = (car.getId() % 2 == 0) ? 2 : 1;  // Alterne entre 1 et 2 images
 
         for (int i = 1; i <= nombreImages; i++) {
-            String imagePath = "/image/voitures/voiture" + car.getId() + "_" + i + ".jpg";
+            String imagePath = "/voitures/voiture" + car.getId() + "_" + i + ".jpg";
             images.add(new Image(imagePath, car));
         }
         return images;
