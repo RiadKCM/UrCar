@@ -12,11 +12,20 @@ import java.util.List;
 
 public class DataInitializer {
     public static void initializeData() {
-        System.out.println("Initialisation des données...");
+        System.out.println("🚗 Initialisation des données...");
 
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("urcar-pu");
+        EntityManager em = emf.createEntityManager();
 
-        // Liste des voitures à insérer
-        List<Car> cars = Arrays.asList(
+        try {
+            long carCount = (long) em.createQuery("SELECT COUNT(c) FROM Car c").getSingleResult();
+            System.out.println("📊 Nombre de voitures existantes : " + carCount);
+            if (carCount > 0) {
+                return;  //  Si les voitures existent déjà, on ne fait rien
+            }
+
+            // 1️⃣ Insérer les voitures
+            List<Car> cars = Arrays.asList(
                 new Car("Toyota", "Corolla", 20000.0, "Berline blanche, 50 000 km, très bien entretenue.", new ArrayList<>()),
                 new Car("Toyota", "Camry", 25000.0, "Camry noire, 40 000 km, conduite souple et économique.", new ArrayList<>()),
                 new Car("BMW", "3 Series", 40000.0, "BMW gris métallisé, 30 000 km, intérieur cuir premium.", new ArrayList<>()),
@@ -39,37 +48,30 @@ public class DataInitializer {
                 new Car("Lexus", "RX", 50000.0, "SUV hybride luxe gris, 25 000 km, ultra confortable.", new ArrayList<>())
         );
 
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("urcar-pu");
-        EntityManager em = emf.createEntityManager();
-        try {
-            long carCount = (long) em.createQuery("SELECT COUNT(c) FROM Car c").getSingleResult();
-            System.out.println("Nombre de voitures existantes : " + carCount);
-            if (carCount > 0) {
-                return;
-            }
             em.getTransaction().begin();
             for (Car car : cars) {
                 em.persist(car);
             }
-            em.flush(); 
             em.getTransaction().commit();
-            System.out.println("Voitures insérées avec succès !");
+            System.out.println("✅ Voitures insérées avec succès !");
+
+            // 2️⃣ Récupérer les voitures après insertion pour s'assurer que les IDs sont bien définis
+            List<Car> persistedCars = em.createQuery("SELECT c FROM Car c", Car.class).getResultList();
+
+            // 3️⃣ Insérer les images associées aux voitures
             em.getTransaction().begin();
-            for (Car car : cars) {
-                em.refresh(car); 
-                List<Image> images = new ArrayList<>();
-                int nombreImages = (car.getId() % 2 == 0) ? 2 : 1; 
-                for (int i = 1; i <= nombreImages; i++) {
-                    String imagePath = "app/src/main/ressources/image/voitures/voiture" + car.getId() + "_" + i + ".jpg";
-                    Image image = new Image(imagePath, car);
-                    images.add(image);
-                    em.persist(image);
-                    System.out.println("Image ajoutée : " + imagePath);
+            for (Car car : persistedCars) {
+                List<Image> images = generateCarImages(car);
+                car.getImages().addAll(images); // Ajoute les images à la voiture
+                for (Image image : images) {
+                    em.persist(image); // Persiste chaque image en base
+                    System.out.println("🖼️ Image ajoutée : " + image.getImagePath());
                 }
-                car.setImages(images);
+                em.merge(car); // Met à jour la voiture pour inclure les images
             }
             em.getTransaction().commit();
-            System.out.println("Images insérées avec succès !");
+            System.out.println("✅ Images insérées avec succès !");
+            
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -79,5 +81,17 @@ public class DataInitializer {
             em.close();
             emf.close();
         }
+    }
+
+    // 🔄 Génère une liste d'images pour une voiture donnée
+    private static List<Image> generateCarImages(Car car) {
+        List<Image> images = new ArrayList<>();
+        int nombreImages = (car.getId() % 2 == 0) ? 2 : 1;  // Alterne entre 1 et 2 images
+
+        for (int i = 1; i <= nombreImages; i++) {
+            String imagePath = "/image/voitures/voiture" + car.getId() + "_" + i + ".jpg";
+            images.add(new Image(imagePath, car));
+        }
+        return images;
     }
 }
