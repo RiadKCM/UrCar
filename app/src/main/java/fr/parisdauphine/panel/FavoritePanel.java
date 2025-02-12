@@ -88,9 +88,9 @@ public class FavoritePanel extends VBox {
         carInfo.getChildren().addAll(
                 new Label(car.getBrand() + " " + car.getModel()),
                 new Label("Prix : " + car.getPrice() + " €"),
+                new Label("Détails : " + car.getdescription()),
                 createButtons(favorite, carCard, container)
         );
-
         carCard.getChildren().addAll(carImageView, carInfo);
         return carCard;
     }

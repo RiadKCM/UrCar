@@ -168,7 +168,7 @@ public class CartPanel extends VBox {
         TextField expiryDateField = new TextField();
         expiryDateField.setPromptText("MM/YY");
         form.getChildren().add(new HBox(10, new Label("Date d'expiration (MM/YY):"), expiryDateField));
-
+        
         return form;
     }
 
