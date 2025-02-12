@@ -19,6 +19,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
+import java.io.File;
 import java.util.List;
 
 public class CartPanel extends VBox {
@@ -64,7 +65,7 @@ public class CartPanel extends VBox {
         rightColumn.setAlignment(Pos.CENTER);
         Button confirmButton = new Button("\u2714 Confirmer l'achat");
         confirmButton.setStyle("-fx-background-color: green; -fx-text-fill: white;");
-        confirmButton.setOnAction(e -> handlePurchase());
+        confirmButton.setOnAction(e -> handlePurchaseConfirmation());
 
         rightColumn.getChildren().add(confirmButton);
         HBox mainContainer = new HBox(20, leftColumn, rightColumn);
@@ -73,6 +74,29 @@ public class CartPanel extends VBox {
         getChildren().add(cardContainer);
         
         loadCart();
+    }
+
+    private void handlePurchaseConfirmation() {
+        // Affichage d'un message de confirmation
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmationAlert.setTitle("Confirmer l'achat");
+        confirmationAlert.setHeaderText("Êtes-vous sûr de vouloir confirmer l'achat ?");
+        confirmationAlert.setContentText("Cela procédera à l'achat de la voiture.");
+
+        // Boutons pour confirmer ou annuler
+        ButtonType confirmButtonType = new ButtonType("Confirmer");
+        ButtonType cancelButtonType = new ButtonType("Annuler");
+
+        confirmationAlert.getButtonTypes().setAll(confirmButtonType, cancelButtonType);
+
+        // Attente de la réponse de l'utilisateur
+        confirmationAlert.showAndWait().ifPresent(response -> {
+            if (response == confirmButtonType) {
+                handlePurchase(); // L'acheteur a confirmé l'achat
+            } else {
+                showAlert(Alert.AlertType.INFORMATION, "Achat annulé", "L'achat a été annulé.");
+            }
+        });
     }
 
     private void loadCart() {
@@ -90,7 +114,10 @@ public class CartPanel extends VBox {
     }
 
     private void generateInvoicePDF(Invoice invoice) {
-        String fileName = "facture_" + invoice.getOrder().getUser().getNom() + ".pdf";
+        String directoryPath = "src/main/resources/factures/";
+        File directory = new File(directoryPath);
+        String fileName = "facture_" + invoice.getOrder().getUser().getNom() + "_" + invoice.getOrder().getUser().getPrenom() + "_" + invoice.getId() + ".pdf";
+        File file = new File(directory, fileName);
         try (PDDocument document = new PDDocument()) {
             PDPage page = new PDPage(PDRectangle.A4);
             document.addPage(page);
@@ -129,7 +156,8 @@ public class CartPanel extends VBox {
                 }
                 contentStream.endText();
             }
-            document.save(fileName);
+            //document.save(fileName);
+            document.save(file);
             showAlert(Alert.AlertType.INFORMATION, "Facture générée", "La facture a été sauvegardée sous : " + fileName);
         } catch (Exception e) {
             e.printStackTrace();
@@ -194,8 +222,6 @@ public class CartPanel extends VBox {
             invoiceRepository.save(invoice); 
             // 3. Générer la facture PDF avec l'ID mis à jour
             generateInvoicePDF(invoice);
-    
-            showAlert(Alert.AlertType.INFORMATION, "Achat confirmé", "Merci pour votre achat ! La facture a été générée.");
         } catch (Exception e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue lors de l'achat.");
         }
