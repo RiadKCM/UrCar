@@ -23,17 +23,17 @@ public class AdminPanel extends VBox {
         manageUsersButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
         manageUsersButton.setOnAction(e -> mainFrame.navigateTo("Gestion des utilisateurs"));
 
-        Button viewSalesButton = new Button("Consulter les Ventes");
+        Button viewSalesButton = new Button("Consulter les commandes");
         viewSalesButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white;");
-        viewSalesButton.setOnAction(e -> showAlert("Consultation des ventes"));
+        viewSalesButton.setOnAction(e -> mainFrame.navigateTo("Consulter les commandes"));
 
         Button dashboardButton = new Button("Tableau de Bord");
         dashboardButton.setStyle("-fx-background-color: #FF9800; -fx-text-fill: white;");
-        dashboardButton.setOnAction(e -> showAlert("Tableau de bord admin"));
+        dashboardButton.setOnAction(e -> mainFrame.navigateTo("Tableau de Bord"));
 
         Button manageCarsButton = new Button("Gérer les Voitures");
         manageCarsButton.setStyle("-fx-background-color: #FF5722; -fx-text-fill: white;");
-        manageCarsButton.setOnAction(e -> mainFrame.navigateTo("GestionVoitures"));
+        manageCarsButton.setOnAction(e -> mainFrame.navigateTo("Gestion Voitures"));
 
         getChildren().addAll(titleLabel, manageUsersButton, viewSalesButton, dashboardButton, manageCarsButton);
     }

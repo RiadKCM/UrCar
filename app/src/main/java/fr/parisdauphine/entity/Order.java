@@ -1,6 +1,8 @@
 package fr.parisdauphine.entity;
 
 import jakarta.persistence.*;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,8 +35,11 @@ public class Order {
     @Column(nullable = false)
     private Status status;
 
+    private BigDecimal totalPrice;
+
+
     public enum Status {
-        EN_COURS, LIVRE, ANNULE, PAYE
+        EN_COURS,EXPEDIEE, LIVREE, ANNULEE
     }
 
     // Constructeurs
@@ -82,7 +87,19 @@ public class Order {
         this.cars.add(car);
     }
 
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
     public void removeCar(Car car) {
         this.cars.remove(car);
+    }
+
+    public void setStatus(String newStatus) {
+        this.status = Status.valueOf(newStatus.toUpperCase());
     }
 }

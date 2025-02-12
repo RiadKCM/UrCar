@@ -2,6 +2,7 @@ package fr.parisdauphine.panel;
 
 import fr.parisdauphine.config.HibernateUtil;
 import fr.parisdauphine.entity.User;
+import fr.parisdauphine.service.ValidationService;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -10,6 +11,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 
 public class AccountPanel extends BorderPane {
     private final MainFrame mainFrame;
@@ -83,6 +85,14 @@ public class AccountPanel extends BorderPane {
         phoneValue.setStyle(valueStyle);
         Button phoneEditButton = createEditButton(phoneValue, "Téléphone", currentUser);
 
+        // Mot de Passe
+        Label pwdLabel = new Label("Mot de Passe :");
+        pwdLabel.setStyle(labelStyle);
+        Label pwdValue = new Label("●●●●●●");
+        pwdValue.setStyle(valueStyle);
+        Button pwdButton = createEditButton(pwdValue, "Mot de Passe", currentUser);
+
+
         // Ajouter les informations à la grille
         userInfoGrid.add(nameLabel, 0, 0);
         userInfoGrid.add(nameValue, 1, 0);
@@ -99,6 +109,10 @@ public class AccountPanel extends BorderPane {
         userInfoGrid.add(phoneLabel, 0, 3);
         userInfoGrid.add(phoneValue, 1, 3);
         userInfoGrid.add(phoneEditButton, 2, 3);
+
+        userInfoGrid.add(pwdLabel, 0, 4);
+        userInfoGrid.add(pwdValue, 1, 4);
+        userInfoGrid.add(pwdButton, 2, 4);
 
         // Ajouter le conteneur principal au panneau
         accountContainer.getChildren().add(userInfoGrid);
@@ -135,34 +149,51 @@ public class AccountPanel extends BorderPane {
     }
 
     private void openEditDialog(Label label, String field, User user) {
-        // Créer un TextField pour permettre la modification
-        TextField editField = new TextField(label.getText());
+    TextField editField;
 
-        // Créer un dialog pour la modification
-        Dialog<String> dialog = new Dialog<>();
-        dialog.setTitle("Modifier " + field);
-        dialog.setHeaderText("Modifier le " + field);
-
-        ButtonType saveButtonType = new ButtonType("Enregistrer", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
-
-        // Ajouter le champ de texte au dialogue
-        dialog.getDialogPane().setContent(editField);
-
-        // Lorsque l'utilisateur clique sur "Enregistrer"
-        dialog.setResultConverter(dialogButton -> {
-            if (dialogButton == saveButtonType) {
-                String newValue = editField.getText();
-                if (newValue != null && !newValue.trim().isEmpty()) {
-                    label.setText(newValue); // Mise à jour de l'étiquette avec la nouvelle valeur
-                    showConfirmationDialog(user, field, newValue);
-                }
-            }
-            return null;
-        });
-
-        dialog.showAndWait();
+    if (field.equals("Mot de Passe")) {
+        editField = new PasswordField();
+        editField.setPromptText("Nouveau mot de passe");
+    } else {
+        editField = new TextField(label.getText());
     }
+
+    Dialog<String> dialog = new Dialog<>();
+    dialog.setTitle("Modifier " + field);
+    dialog.setHeaderText("Modifier le " + field);
+
+    ButtonType saveButtonType = new ButtonType("Enregistrer", ButtonBar.ButtonData.OK_DONE);
+    dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+    dialog.getDialogPane().setContent(editField);
+
+    dialog.setResultConverter(dialogButton -> {
+        if (dialogButton == saveButtonType) {
+            String newValue = editField.getText();
+            if (newValue != null && !newValue.trim().isEmpty()) {
+                if (field.equals("Mot de Passe")) {
+                    if (!ValidationService.isValidPassword(newValue)) {
+                        showAlert(Alert.AlertType.ERROR, "Mot de passe invalide", 
+                            "Le mot de passe doit contenir au moins :\n" +
+                            "- 6 caractères\n" +
+                            "- 1 lettre minuscule\n" +
+                            "- 1 chiffre\n" +
+                            "- 1 caractère spécial (@$!%*?&)");
+                        return null;
+                    }
+                    label.setText("●●●●●●"); // Toujours masquer le mot de passe
+                } else {
+                    label.setText(newValue);
+                }
+                showConfirmationDialog(user, field, newValue);
+            }
+        }
+        return null;
+    });
+
+    dialog.showAndWait();
+}
+
+    
 
     private void showConfirmationDialog(User user, String field, String newValue) {
         Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -181,32 +212,45 @@ public class AccountPanel extends BorderPane {
     private void updateUserFieldInDatabase(User user, String field, String newValue) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
-
-            // Mettre à jour le champ de l'utilisateur
+    
+            // Récupérer l'utilisateur en base dans la session actuelle
+            User userToUpdate = session.get(User.class, user.getId());
+    
+            if (userToUpdate == null) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Utilisateur introuvable en base.");
+                return;
+            }
+    
+            // Mise à jour du champ concerné
             switch (field) {
                 case "Nom":
-                    user.setNom(newValue);
+                    userToUpdate.setNom(newValue);
                     break;
                 case "Prénom":
-                    user.setPrenom(newValue);
+                    userToUpdate.setPrenom(newValue);
                     break;
                 case "Email":
-                    user.setEmail(newValue);
+                    userToUpdate.setEmail(newValue);
                     break;
                 case "Téléphone":
-                    user.setTelephone(newValue);
+                    userToUpdate.setTelephone(newValue);
+                    break;
+                case "Mot de Passe":
+                    String hashedPassword = BCrypt.hashpw(newValue, BCrypt.gensalt());
+                    userToUpdate.setMotDePasse(hashedPassword); 
                     break;
             }
-
-            session.update(user); // Mettre à jour l'utilisateur dans la base de données
+    
+            session.update(userToUpdate); // Met à jour l'utilisateur dans la session
             session.getTransaction().commit();
-
+    
             showAlert(Alert.AlertType.INFORMATION, "Mise à jour réussie", "Les informations de votre compte ont été mises à jour avec succès.");
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue lors de la mise à jour.");
         }
     }
+    
 
     // Méthode pour afficher une alerte
     private void showAlert(Alert.AlertType alertType, String title, String content) {

@@ -44,46 +44,4 @@ public class UserService {
         Optional<User> userOpt = userRepository.findByEmail(email);
         return userOpt.filter(user -> BCrypt.checkpw(password, user.getMotDePasse()));
     }
-
-    /*// Inscription
-    public boolean register(User user) {
-        System.out.println("Début de l'inscription de l'utilisateur : " + user.getEmail());
-
-        if (userRepository.existsByEmail(user.getEmail())) {
-            System.out.println("Email déjà utilisé : " + user.getEmail());
-            return false;
-        }
-        if (userRepository.existsByPhoneNumber(user.getTelephone())) {
-            System.out.println("Téléphone déjà utilisé : " + user.getTelephone());
-            return false;
-        }        
-        try {
-            // Hasher le mot de passe
-            String hashedPassword = BCrypt.hashpw(user.getMotDePasse(), BCrypt.gensalt());
-            user.setMotDePasse(hashedPassword);
-
-            // Sauvegarder l'utilisateur
-            userRepository.save(user);
-            System.out.println("Utilisateur enregistré avec succès !");
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-
-    // Connexion
-    public Optional<User> login(String email, String rawPassword) {
-        Optional<User> userOpt = userRepository.findByEmail(email);
-
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
-            // Vérifier le mot de passe
-            if (BCrypt.checkpw(rawPassword, user.getMotDePasse())) {
-                return Optional.of(user);
-            }
-        }
-        return Optional.empty();
-    }*/
 }

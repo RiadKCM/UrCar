@@ -6,6 +6,7 @@ import fr.parisdauphine.service.CarService;
 import fr.parisdauphine.service.UserService;
 import org.hibernate.Session;
 import fr.parisdauphine.config.HibernateUtil;
+import fr.parisdauphine.entity.Order;
 import fr.parisdauphine.entity.User;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -28,6 +29,7 @@ import javafx.stage.Stage;
 public class MainFrame extends Stage {
     private User currentUser;
     private Label panierBadge;
+    private MyOrdersPanel myOrdersPanel;
     private final Map<String, VBox> panels = new HashMap<>();
     private final BorderPane rootLayout = new BorderPane();
     private String activeTab = "Choix";
@@ -78,7 +80,7 @@ public class MainFrame extends Stage {
 
         // Par défaut, afficher l'écran de choix
         navigateTo("Choix");
-
+        
         // Création de la scène
         Scene scene = new Scene(rootLayout, 900, 600);
 
@@ -88,6 +90,13 @@ public class MainFrame extends Stage {
         setScene(scene);
         show();
     }
+    
+    public void updateMyOrdersPanel(Order updatedOrder) {
+        if (myOrdersPanel != null) {
+            myOrdersPanel.updateOrderStatus(updatedOrder);  
+        }
+    }
+    
 
     public User getCurrentUser() {
         return currentUser;
@@ -176,13 +185,15 @@ public class MainFrame extends Stage {
         panels.put("Compte", new VBox());
         panels.put("Mes Commandes", new VBox());
         panels.put("Resultats", new VBox());
-        panels.put("GestionVoitures", new VBox(new CarAdminPanel(this)));
+        panels.put("Gestion Voitures", new VBox(new CarAdminPanel(this)));
         panels.put("Gestion des utilisateurs", new VBox(new UserAdminPanel(this)));
         panels.put("Gérer les Avis", new VBox(new ReviewAdminPanel(this)));
+        panels.put("Consulter les commandes", new VBox(new OrderAdminPanel(this)));
+        panels.put("Tableau de Bord", new VBox(new DashboardPanel(this)));
+
 
         return contentPanel;
     }
-
 
     private VBox createFooter() {
         VBox footer = new VBox(5); // Espacement réduit entre les éléments

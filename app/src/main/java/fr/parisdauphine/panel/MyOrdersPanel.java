@@ -64,26 +64,43 @@ public class MyOrdersPanel extends VBox {
         }
     }
 
+    public void updateOrderStatus(Order updatedOrder) {
+        for (int i = 0; i < ordersContainer.getChildren().size(); i++) {
+            VBox orderBox = (VBox) ordersContainer.getChildren().get(i);
+            Label orderIdLabel = (Label) orderBox.lookup(".orderIdLabel");
+            
+            if (orderIdLabel != null && orderIdLabel.getText().contains("Commande #" + updatedOrder.getId())) {
+                // Trouver la commande correspondante et mettre à jour son statut
+                Label statusLabel = (Label) orderBox.lookup(".statusLabel");
+                if (statusLabel != null) {
+                    statusLabel.setText("Statut: " + updatedOrder.getStatus());
+                }
+            }
+        }
+    }
+    
     private VBox createOrderCard(Order order) {
         VBox orderBox = new VBox(10);
         orderBox.setPadding(new Insets(10));
         orderBox.setStyle("-fx-background-color: #ffffff; -fx-border-color: #ddd; -fx-border-radius: 5px; -fx-padding: 15px;");
         orderBox.setAlignment(Pos.CENTER_LEFT);
-
+    
         Label orderIdLabel = new Label("Commande #" + order.getId());
         orderIdLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #333333;");
-
+        orderIdLabel.setId("orderIdLabel"); // Ajouter un identifiant unique
+    
         Label dateLabel = new Label("Date: " + order.getOrderDate());
         dateLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #555555;");
-
+    
         Label statusLabel = new Label("Statut: " + order.getStatus());
         statusLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #007bff; -fx-font-weight: bold;");
-
+        statusLabel.setId("statusLabel"); // Ajouter un identifiant unique
+    
         // Calcul du prix total de la commande
         double totalPrice = order.getCars().stream().mapToDouble(Car::getPrice).sum();
         Label totalPriceLabel = new Label("Prix total: " + totalPrice + "€");
         totalPriceLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #333333;");
-
+    
         // Liste des voitures associées à la commande
         ListView<String> carListView = new ListView<>();
         for (Car car : order.getCars()) {
@@ -91,10 +108,11 @@ public class MyOrdersPanel extends VBox {
         }
         carListView.setPrefHeight(80);
         carListView.setMaxWidth(300);
-
+    
         orderBox.getChildren().addAll(orderIdLabel, dateLabel, statusLabel, totalPriceLabel, carListView);
         return orderBox;
     }
+    
 
     private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
