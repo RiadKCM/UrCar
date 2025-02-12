@@ -4,6 +4,7 @@ import fr.parisdauphine.entity.Car;
 import fr.parisdauphine.entity.Cart;
 import fr.parisdauphine.entity.Order;
 import fr.parisdauphine.entity.User;
+import fr.parisdauphine.exception.CarAlreadyInCartException;
 import fr.parisdauphine.repository.CarRepository;
 import fr.parisdauphine.repository.CartRepository;
 import fr.parisdauphine.repository.OrderRepository;
@@ -24,11 +25,7 @@ public class CartService {
         this.carRepository = new CarRepository();
     }
 
-    public void removeFromCart(User user, Car car) {
-        cartRepository.removeCarFromCart(user, car);
-    }
-
-    public void addToCart(User currentUser, Car car) {
+    public void addToCart(User currentUser, Car car) throws CarAlreadyInCartException {
         cartRepository.addCarToCart(currentUser, car);
     }
 

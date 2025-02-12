@@ -1,0 +1,169 @@
+/* Menu Burger */
+.menu-burger {
+    font-size: 16px;
+    color: white;
+    background-color: #1e1e1e;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.menu-burger:hover {
+    background-color: #3a3a3a;
+}
+
+/* Navigation Buttons */
+.nav-button {
+    background-color: #2c2c2c;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 8px 15px;
+    border-radius: 5px;
+}
+
+.nav-button:hover {
+    background-color: #3a3a3a;
+}
+/* Styles pour le bouton avec l'icône Home */
+.nav-button.home {
+    background-color: #323232;
+    border: none;
+    padding: 10px;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.nav-button.home:hover {
+    background-color: #6495ED; /* Couleur au survol */
+}
+
+/* Styles pour le bouton avec l'icône Cart */
+.nav-button.cart {
+    background-color: #323232;
+    border: none;
+    padding: 10px;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.nav-button.cart:hover {
+    background-color: #6495ED; /* Couleur au survol */
+}
+
+/* Bouton pour enlever des favoris avec icône cœur */
+.remove-favorite-button {
+    background-color: transparent;
+    border: none; /* Supprime les bordures */
+    background-size: 16px 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+    font-size: 18px; /* Ajuste la taille de l'emoji */
+    cursor: pointer; /* Change le curseur pour pointer */
+    width: auto; /* Ajuste automatiquement la largeur */
+    height: auto; /* Ajuste automatiquement la hauteur */
+    padding: 0; /* Supprime les marges internes */
+}
+
+/* Bouton pour ajouter au panier avec icône panier */
+.add-to-cart-button {
+    background-color: transparent;
+    border: none; /* Supprime les bordures */
+    background-size: 16px 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+    font-size: 18px; /* Ajuste la taille de l'emoji */
+    cursor: pointer; /* Change le curseur pour pointer */
+    width: auto; /* Ajuste automatiquement la largeur */
+    height: auto; /* Ajuste automatiquement la hauteur */
+    padding: 0; /* Supprime les marges internes */
+}
+
+.button {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.button:hover {
+    background-color: #5577CC;
+}
+
+.cart-button {
+    background-color: #6495ED;
+    color: white;
+    font-weight: bold;
+    padding: 5px 15px;
+    border-radius: 10px;
+}
+
+.cart-button:hover {
+    background-color: #4F8BEF;
+}
+
+/* ----- Style du panel principal ----- */
+.review-panel {
+    background-color: #f5f5f5;
+    padding: 20px;
+}
+
+/* ----- Titre ----- */
+.title {
+    fill: #333;
+    font-weight: bold;
+}
+
+/* ----- Conteneur des avis ----- */
+.review-container {
+    background-color: white;
+    border-color: #ddd;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+/* ----- Boîte de chaque avis ----- */
+.review-box {
+    background-color: #ffffff;
+    border-radius: 10px;
+    border-color: #ddd;
+    padding: 10px;
+    margin: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ----- Étoiles dorées ----- */
+.stars {
+    font-size: 20px;
+    color: #FFD700; /* Couleur dorée */
+    font-weight: bold;
+}
+
+/* ----- Texte des avis ----- */
+.review-text {
+    font-size: 14px;
+    fill: #444;
+}
+
+/* ----- Nom de l'utilisateur ----- */
+.user-label {
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+}
+
+/* ----- Bouton Ajouter un avis ----- */
+.add-review-button {
+    background-color: #007BFF;
+    color: white;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+.add-review-button:hover {
+    background-color: #0056b3;
+}

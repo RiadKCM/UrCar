@@ -2,6 +2,7 @@ package fr.parisdauphine.panel;
 
 import fr.parisdauphine.entity.Car;
 import fr.parisdauphine.entity.User;
+import fr.parisdauphine.exception.CarAlreadyInCartException;
 import fr.parisdauphine.service.CarService;
 import fr.parisdauphine.service.CartService;
 import fr.parisdauphine.service.FavoriteService;
@@ -136,8 +137,14 @@ public class ResultatsPanel extends VBox {
             return;
         }
 
-        cartService.addToCart(currentUser, car);
-        showAlert(Alert.AlertType.INFORMATION, "Ajouté au panier", car.getBrand() + " " + car.getModel() + " a été ajouté au panier.");
+        try {
+            cartService.addToCart(currentUser, car);
+            showAlert(Alert.AlertType.INFORMATION, "Ajouté au panier", car.getBrand() + " " + car.getModel() + " a été ajouté au panier.");
+        } catch (CarAlreadyInCartException e) {
+            showAlert(Alert.AlertType.WARNING, "Déjà ajouté", e.getMessage());
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue : " + e.getMessage());
+        }
     }
 
     private void addToFavorites(Car car) {

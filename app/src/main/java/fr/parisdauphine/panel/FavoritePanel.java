@@ -3,6 +3,7 @@ package fr.parisdauphine.panel;
 import fr.parisdauphine.entity.Car;
 import fr.parisdauphine.entity.Favorite;
 import fr.parisdauphine.entity.User;
+import fr.parisdauphine.exception.CarAlreadyInCartException;
 import fr.parisdauphine.service.CartService;
 import fr.parisdauphine.service.FavoriteService;
 import javafx.geometry.Insets;
@@ -107,8 +108,15 @@ public class FavoritePanel extends VBox {
         Button addToCartButton = new Button("🛒 Ajouter au panier");
         addToCartButton.setStyle("-fx-background-color: green; -fx-text-fill: white;");
         addToCartButton.setOnAction(e -> {
-            cartService.addToCart(favorite.getUser(), favorite.getCar());
-            showAlert(Alert.AlertType.INFORMATION, "Ajouté au panier", favorite.getCar().getBrand() + " " + favorite.getCar().getModel() + " a été ajouté au panier.");
+            try {
+                cartService.addToCart(favorite.getUser(), favorite.getCar());
+                showAlert(Alert.AlertType.INFORMATION, "Ajouté au panier",
+                        favorite.getCar().getBrand() + " " + favorite.getCar().getModel() + " a été ajouté au panier.");
+            } catch (CarAlreadyInCartException ex) {
+                showAlert(Alert.AlertType.WARNING, "Déjà ajouté", ex.getMessage());
+            } catch (Exception ex) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Une erreur est survenue : " + ex.getMessage());
+            }
         });
 
         return new HBox(10, removeButton, addToCartButton);
