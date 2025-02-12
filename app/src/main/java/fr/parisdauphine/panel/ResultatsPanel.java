@@ -118,7 +118,7 @@ public class ResultatsPanel extends VBox {
         addToCartButton.setStyle("-fx-background-color: green; -fx-text-fill: white;");
         addToCartButton.setOnAction(e -> addToCart(car));
     
-        Button likeButton = new Button("❤️");
+        Button likeButton = new Button("❤️ ");
         likeButton.setStyle("-fx-background-color: transparent; -fx-font-size: 16px;");
         likeButton.setOnAction(e -> addToFavorites(car));
         carImageView.setOnMouseClicked(e -> showImageDetail(car));

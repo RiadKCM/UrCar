@@ -27,7 +27,7 @@ public class Car {
     @Column(nullable = false)
     private Status status; // ✅ Nouveau champ pour le statut (EN_VENTE, VENDU)
 
-    @OneToMany(mappedBy = "car", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images = new ArrayList<>(); // ✅ Initialisation pour éviter NullPointerException
 
     public enum Status {

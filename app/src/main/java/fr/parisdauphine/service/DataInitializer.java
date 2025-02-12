@@ -14,6 +14,7 @@ public class DataInitializer {
     public static void initializeData() {
         System.out.println("Initialisation des données...");
 
+
         // Liste des voitures à insérer
         List<Car> cars = Arrays.asList(
                 new Car("Toyota", "Corolla", 20000.0, "Berline blanche, 50 000 km, très bien entretenue.", new ArrayList<>()),
@@ -44,31 +45,31 @@ public class DataInitializer {
             long carCount = (long) em.createQuery("SELECT COUNT(c) FROM Car c").getSingleResult();
             System.out.println("Nombre de voitures existantes : " + carCount);
             if (carCount > 0) {
-                System.out.println("Les données de voitures existent déjà. Pas d'insertion.");
                 return;
             }
-
             em.getTransaction().begin();
             for (Car car : cars) {
                 em.persist(car);
             }
+            em.flush(); 
             em.getTransaction().commit();
-            System.out.println("Voitures insérées !");
-
+            System.out.println("Voitures insérées avec succès !");
             em.getTransaction().begin();
             for (Car car : cars) {
+                em.refresh(car); 
                 List<Image> images = new ArrayList<>();
-                for (int i = 1; i <= 2; i++) {
-                    String imagePath = "/image/voitures/voiture" + car.getId() + "_" + i + ".jpg";
+                int nombreImages = (car.getId() % 2 == 0) ? 2 : 1; 
+                for (int i = 1; i <= nombreImages; i++) {
+                    String imagePath = "app/src/main/ressources/image/voitures/voiture" + car.getId() + "_" + i + ".jpg";
                     Image image = new Image(imagePath, car);
                     images.add(image);
                     em.persist(image);
+                    System.out.println("Image ajoutée : " + imagePath);
                 }
                 car.setImages(images);
-                em.merge(car);
             }
             em.getTransaction().commit();
-            System.out.println("Images insérées !");
+            System.out.println("Images insérées avec succès !");
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
